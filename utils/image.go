@@ -71,7 +71,7 @@ func ProcessImage(task entity.ImageProcessingTask) {
 		}
 	case "resize":
 		dst = imaging.Resize(src, task.Width, task.Height, imaging.Lanczos)
-		err = imaging.Encode(&outputData, dst, imaging.PNG, imaging.JPEGQuality(task.Quality))
+		err = imaging.Encode(&outputData, dst, imaging.PNG)
 		if err != nil {
 			log.Errorf("Failed to encode image: %v", err)
 			ResponseChan <- entity.ImageResponse{Context: task.Context, Err: err}
@@ -84,7 +84,7 @@ func ProcessImage(task entity.ImageProcessingTask) {
 		}
 	case "compress":
 		dst = imaging.Clone(src)
-		err = imaging.Encode(&outputData, dst, imaging.PNG, imaging.JPEGQuality(task.Quality))
+		err = imaging.Encode(&outputData, dst, imaging.JPEG, imaging.JPEGQuality(task.Quality))
 		if err != nil {
 			log.Errorf("Failed to compress image: %v", err)
 			ResponseChan <- entity.ImageResponse{Context: task.Context, Err: err}

@@ -64,7 +64,7 @@ POST /convert
 **Example:**
 
 ```bash
-curl -X POST http://localhost:8000/convert -F "file=@/path/to/image.png" > output.jpeg
+curl -X POST "http://localhost:8000/convert" -F "file=@logo.png" > output.jpeg
 ```
 
 ### Resize Image
@@ -79,7 +79,7 @@ curl -X POST http://localhost:8000/convert -F "file=@/path/to/image.png" > outpu
 **Example:**
 
 ```bash
-curl -X POST http://localhost:8000/resize?width=800&height=600 -F "file=@/path/to/image.png" > output.png
+curl -X POST "http://localhost:8000/resize?width=50&height=50" -F "file=@logo.png" > output.png
 ```
 
 ### Compress Image
@@ -95,7 +95,7 @@ POST /compress
 **Example:**
 
 ```bash
-curl -X POST http://localhost:8000/compress?quality=80 -F "file=@/path/to/image.png" > output.png
+curl -X POST "http://localhost:8000/compress?quality=80" -F "file=@logo.png" > output.png
 ```
 
 ## Implementation Details
@@ -109,7 +109,7 @@ The code utilizes a semaphore-based approach to limit the number of concurrent w
 To run the test suite, navigate to the project directory and execute the following command:
 
 ```go
-go test
+go test ./test
 ```
 
 The test suite includes test cases for various scenarios, such as invalid input parameters and successful image processing operations.
