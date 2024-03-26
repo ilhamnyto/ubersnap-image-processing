@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"bytes"
+	"image"
 	"net/http"
 	"strconv"
 
-	"github.com/ilhamnyto/ubersnap-image-processing/entity"
+	"github.com/disintegration/imaging"
 	"github.com/ilhamnyto/ubersnap-image-processing/utils"
 	"github.com/labstack/echo/v4"
 )
@@ -27,17 +29,20 @@ func CompressImageHandler(c echo.Context) error {
 	}
 	defer inputData.Close()
 
-	utils.ProcessImageTask(entity.ImageProcessingTask{
-		InputData: utils.ReadFileData(inputData),
-		Operation: "compress",
-		Quality:   qualityInt,
-		Context:   c,
-	})
+	src, err := imaging.Decode(bytes.NewReader(utils.ReadFileData(inputData)))
 
-	resp := <-utils.ResponseChan
-	if resp.Err != nil {
-		return c.String(http.StatusInternalServerError, resp.Err.Error())
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message" : "Failed to decode input data"})
 	}
 
-	return c.Blob(http.StatusOK, resp.ContentType, resp.Data)
+	var dst *image.NRGBA
+	var outputData bytes.Buffer
+
+	dst = imaging.Clone(src)
+	err = imaging.Encode(&outputData, dst, imaging.JPEG, imaging.JPEGQuality(qualityInt))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message" : "Failed to compress image"})
+	}
+	
+	return c.Blob(http.StatusOK, "image/png", outputData.Bytes())
 }
